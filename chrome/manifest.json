@@ -1,0 +1,34 @@
+{
+
+  "description": "Merging Pinboard.in and HackerNews to bring about Armageddon.",
+  "manifest_version": 2,
+  "name": "HackerCreep",
+  "version": "1.0",
+  "homepage_url": "https://blog.pythonaro.com",
+
+  "applications": {
+    "gecko": {
+      "id": "hackercreep@pythonaro.com",
+      "strict_min_version": "45.0.0"
+    }
+  },
+  
+  "permissions": [
+          "storage",
+          "*://hn.algolia.com/*"
+        ],
+  
+  "content_scripts": {
+      "matches": ["*://*.pinboard.in/*"],
+      "js": ["content.js"]
+  },
+  
+  "background": {
+      "scripts": ["background.js"]
+  },
+
+  "web_accessible_resources": [
+    "icons/loader.gif",
+    "icons/favicon.ico"
+  ]
+}
