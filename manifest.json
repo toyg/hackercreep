@@ -13,11 +13,20 @@
     }
   },
   
-  "content_scripts": [
+  "permissions": [
+          "storage",
+          "*://hn.algolia.com/*"
+        ],
+  
+  "content_scripts": {
       "matches": ["*://*.pinboard.in/*"],
       "js": ["content.js"]
-  ]
+  },
   
+  "background": {
+      "scripts": ["background.js"]
+  },
+
   "web_accessible_resources": [
     "icons/loader.gif",
     "icons/favicon.ico"

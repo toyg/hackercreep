@@ -1,30 +1,13 @@
-// ==UserScript==
-// @name        hacker_creep
-// @namespace   http://www.pythonaro.com/gmscripts
-// @description Socializing the antisocial.
-// @include     https://pinboard.in/*
-// @version     1
-// @grant       GM_getValue
-// @grant       GM_setValue
-// @grant       GM_xmlhttpRequest
-// @grant       GM_deleteValue
-// @grant       GM_listValues
-// @grant       GM_log
-// @grant		GM_getResourceURL
-// @resource y_icon https://news.ycombinator.com/favicon.ico
-// @resource loader	http://www.ajaxload.info/cache/FF/FF/FF/FA/5C/1F/18-1.gif
-// ==/UserScript==
 
-var MAX_CACHE = 60 * 60 * 24 * 7;  // 7 days
 
 // global YN icon
 var img_icon = document.createElement('img');
-img_icon.src = GM_getResourceURL("y_icon");
+img_icon.src = chrome.runtime.getURL("icons/favicon.ico");
 img_icon.width = 10;
 img_icon.height = 10;
 
 var img_loader = document.createElement('img');
-img_loader.src = GM_getResourceURL("loader");
+img_loader.src = chrome.runtime.getURL("icons/loader.gif");
 img_loader.height = 8;
 
 
@@ -63,32 +46,15 @@ function getTimestamp(){
 // *** cache management functions
 
 function storeRecord(pinboard_id, data){
-	GM_setValue(pinboard_id, JSON.stringify(data));
+    chrome.runtime.sendMessage({'action':'set',
+                                'pinboard_id': pinboard_id, 
+                                'data': data});
 }
 
 function getRecord(pinboard_id){
-	var raw_data = GM_getValue(pinboard_id, null);
-	if(raw_data){
-		var parsed_data = JSON.parse(raw_data);
-		var now = getTimestamp();
-		if((parsed_data['cached'] + MAX_CACHE) > now){
-			return parsed_data;
-		} 
-		// cleanup to save us some effort next time anyone tries this key again...
-		GM_deleteValue(pinboard_id);
-	} 
-	// still here? nothing found or record too old
-	return null;
+	chrome.runtime.sendMessage({'action': 'get',
+	                            'pinboard_id': pinboard_id});
 }
-
-function flushCache(){
-	var keys = GM_listValues();
-	for (var i=0, key=null; key=keys[i]; i++) {
-  		GM_deleteValue(key);
-	}
-}
-// uncomment to flush entire cache
-//flushCache();
 
 
 // GUI
@@ -145,59 +111,59 @@ function toggleLoader(pinboard_id, on){
 function getHnDataForUrl(some_url, pin_id){
 	var ALGOLIA_CALL = "https://hn.algolia.com/api/v1/search?tags=story&restrictSearchableAttributes=url&query=";
 	var api_call = ALGOLIA_CALL + encodeURIComponent(some_url);
-	GM_xmlhttpRequest({
-  method: "GET",
-  url: api_call,
-  onload: function(response) {
-  	if(response.status != 200){
-  		// abort
-  		return;
-  	}
-  
-    var result = JSON.parse(response.responseText);
-    var data = {'hn_id': 0,
-    		'fp': false,
-    		'points': 0,
-    		'cached': getTimestamp()};
-    if(result["nbHits"] > 0){
-    	var maxPoints = 0;
-    	var chosenOne = null;    	
-    	for(i in result["hits"]){
-    		hit = result["hits"][i];
-    		// if we find a front-paged post, assume is the good one and break out
-    		for(i_t in hit["_tags"]){
-    			
-    			tag = hit["_tags"][i_t];
-    			if(tag == 'front_page'){
-    				
-    				data['fp'] = true;
-    				data['hn_id'] = hit['objectID'];
-    				data['points'] = hit['points'];
-    				data['comments'] = hit['num_comments'];
-    				storeRecord(pin_id, data);
-    				displayData(pin_id, data);
-    				return;
-    			}
-    		}
-    		// if not front-paged, look for the one with most points
-    		if(hit["points"] > maxPoints){
-    			chosenOne = hit;
-    			maxPoints = hit["points"];
-    		}
-    	}
-    	data['hn_id'] = chosenOne['objectID'];
-    	data['points'] = chosenOne['points'];
-    	data['comments'] = chosenOne['num_comments'];
-    	
-    }
-    storeRecord(pin_id, data);
-    displayData(pin_id, data);
-  }
-});
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {  
+        if(this.readyState == this.DONE){        
+            if(this.status != 200){
+                // abort
+                return;
+            }
+            var result = JSON.parse(this.responseText);
+            var data = {'hn_id': 0,
+                        'fp': false,
+                        'points': 0,
+                        'cached': getTimestamp()};
+            if(result["nbHits"] > 0){
+                var maxPoints = 0;
+                var chosenOne = null;    	
+                for(i in result["hits"]){
+                    hit = result["hits"][i];
+                    // if we find a front-paged post, assume is the good one and break out
+                    for(i_t in hit["_tags"]){         
+                        tag = hit["_tags"][i_t];
+                        if(tag == 'front_page'){
+                            data['fp'] = true;
+                            data['hn_id'] = hit['objectID'];
+                            data['points'] = hit['points'];
+                            data['comments'] = hit['num_comments'];
+                            storeRecord(pin_id, data);
+                            displayData(pin_id, data);
+                            return;
+                        }
+                    }
+                    // if not front-paged, look for the one with most points
+                    if(hit["points"] > maxPoints){
+                        chosenOne = hit;
+                        maxPoints = hit["points"];
+                    }
+                }
+                data['hn_id'] = chosenOne['objectID'];
+                data['points'] = chosenOne['points'];
+                data['comments'] = chosenOne['num_comments'];
+            }
+            storeRecord(pin_id, data);
+            displayData(pin_id, data);
+        }
+    };
+    xhr.open("GET", api_call, true);
+    xhr.send();
 }
 
 
 // main flow
+
+// TODO: rewrite this to comply with extension architecture based on messages 
+// sent back and forth
 
 if(bookmark_list){
 	var snapResults = document.evaluate("./div/div[contains(string(@class),'bookmark')]", 
