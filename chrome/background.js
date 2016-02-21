@@ -10,21 +10,23 @@ var MAX_CACHE = 60 * 60 * 24 * 7;  // 7 days
 
 
 function storeRecord(message) {
-    var pinboard_id = message['pinboard_id'];
+    var pin_id = message['pinboard_id'].toString();
     var data = message['data'];
-    chrome.storage.local.set({pinboard_id: JSON.stringify(data)});
+    var params = {};
+    params[pin_id] = JSON.stringify(data);
+    chrome.storage.local.set(params);
+
 }
 
 function getRecord(tab_id, message) {
     var pinboard_id = message['pinboard_id'];
-
     chrome.storage.local.get(pinboard_id,
         function (items) {
             if (items.hasOwnProperty(pinboard_id)) {
                 var parsed_data = JSON.parse(items[pinboard_id]);
                 var now = getTimestamp();
                 if ((parsed_data['cached'] + MAX_CACHE) > now) {
-                    msg_data = {'id': pinboard_id, 'data': parsed_data}
+                    msg_data = {"pinboard_id": pinboard_id, 'data': parsed_data};
                     chrome.tabs.sendMessage(tab_id, msg_data);
                     return true;
                 } else {
