@@ -160,10 +160,29 @@ function getHnDataForUrl(some_url, pin_id){
 }
 
 
-// main flow
+// handler for messages coming from background page
 
-// TODO: rewrite this to comply with extension architecture based on messages 
-// sent back and forth
+function handleRecordSearchResult(message, sender, sendResponse){
+
+
+    if(!message.hasOwnProperty('pinboard_id')) return false;
+
+    var pin_id = message['pinboard_id'];
+
+    var data = message['data'];
+    if(data == null){
+			toggleLoader(pin_id, true);
+			var title = getTitle(pin_id);
+			var url = title.getAttribute('href');
+			getHnDataForUrl(url, pin_id);
+		} else {
+			displayData(pin_id, data);
+		}
+}
+
+chrome.runtime.onMessage.addListener(handleRecordSearchResult);
+
+// main flow
 
 if(bookmark_list){
 	var snapResults = document.evaluate("./div/div[contains(string(@class),'bookmark')]", 
@@ -171,22 +190,7 @@ if(bookmark_list){
 	
 	for (var i = snapResults.snapshotLength - 1; i >= 0; i--) {
 		var elm = snapResults.snapshotItem(i);
-		
-		data = getRecord(elm.id);
-		
-		if(data == null){
-			toggleLoader(elm.id, true);
-			
-			var title = document.evaluate(".//a[contains(string(@class),'bookmark_title')]",
-				elm, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-			url = title.getAttribute('href');
-			getHnDataForUrl(url, elm.id);
-			
-		} else {
-			
-			displayData(elm.id, data);
-			
-		}
-		
+
+		getRecord(elm.id);
 	}
-};
+}
