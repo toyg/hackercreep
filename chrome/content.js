@@ -121,6 +121,11 @@ function getHnDataForUrl(some_url, pin_id) {
                 'fp': false,
                 'points': 0,
                 'cached': getTimestamp()};
+
+            // the problem here is that a lot of URLs are duplicated or submitted in multiple variations
+            // e.g. /?m=1 etc.
+            // So we need to try and guess the best one. This seems to break on
+            // websites where the querystring is particularly significant (e.g. youtube).
             if (result["nbHits"] > 0) {
                 var maxPoints = 0;
                 var chosenOne = null;
