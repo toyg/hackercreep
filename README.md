@@ -8,10 +8,9 @@ HackerCreep
 Wat
 ----
 
-While browsing Pinboard, if a link was posted to HN, 
-it will tell you score and number of comments, and link to the thread.
-If the link has never been posted, the link will take you to the (helpfully
-prefilled) submission form.
+While browsing Pinboard, if a page was posted to HN, 
+it will report score and number of comments for that page, and link to relevant HN thread.
+Otherwise, the link will take you to the (helpfully prefilled) HN submission form.
 
 Feature requests welcome.
 
@@ -21,7 +20,7 @@ Supported Browsers
 * Chrome
 * Firefox / Greasemonkey script
 * Firefox / WebExtensions package 
-(eventually. At the moment it would only work in Developer and Nightly anyway)
+(this is still a work in progress. At the moment it would only work in Developer and Nightly anyway)
 
 Safari is not going to happen unless someone kindly donates towards an Apple developer subscription.
 
@@ -31,7 +30,7 @@ Instructions
 ------------
 
 Just pick the extension you need from the repository. 
-If you don't know how, just go to your appstore and get it from there.
+If you don't know how to install it, go to your appstore and get it from there.
 
 Credits / Contact
 -----------------
