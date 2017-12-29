@@ -17,8 +17,8 @@ Feature requests welcome.
 Supported Browsers
 -------------------
 
-* Chrome
 * Firefox 56+ 
+* Chrome
 * Firefox / Greasemonkey script (deprecated, probably doesn't work on recent FF)
 
 Safari is not going to happen unless someone kindly donates towards an Apple developer subscription.
@@ -28,12 +28,16 @@ Safari is not going to happen unless someone kindly donates towards an Apple dev
 Instructions
 ------------
 
-Just pick the extension you need from the repository. 
-If you don't know how to install it, go to your appstore and get it from there.
+- Firefox 56+: [get it from addons.mozilla.org.](https://addons.mozilla.org/en-GB/firefox/addon/hackercreep/)
+
+- Chrome: [get it from the Chrome Web Store.](https://chrome.google.com/webstore/detail/hackercreep/occeghcpngphnhlhbfgpmfhlgddeklap)
+
+- others: download this repository and pick the extension you need.
+
 
 Credits / Contact
 -----------------
-@ Giacomo Lacava, 2016 - released under [GPL](LICENSE).
+@ Giacomo Lacava, 2016 - released under [GPL3](LICENSE).
 
 Use github for patches and issues, or mail me at g.lacava on gmail.
 
