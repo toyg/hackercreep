@@ -18,9 +18,8 @@ Supported Browsers
 -------------------
 
 * Chrome
-* Firefox / Greasemonkey script
-* Firefox / WebExtensions package 
-(this is still a work in progress. At the moment it would only work in Developer and Nightly anyway)
+* Firefox 56+ 
+* Firefox / Greasemonkey script (deprecated, probably doesn't work on recent FF)
 
 Safari is not going to happen unless someone kindly donates towards an Apple developer subscription.
 
