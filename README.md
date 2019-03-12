@@ -1,6 +1,8 @@
 HackerCreep
 ===========
 
+**EDIT 2019: I've stopped using Pinboard, so this is officially unmaintained.**
+
 *Integrating Pinboard and HackerNews to bring about Armageddon.*
 
 ![alt simple screenshot](docs/screenshot.png)
